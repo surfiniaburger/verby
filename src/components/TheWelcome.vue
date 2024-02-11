@@ -1,88 +1,60 @@
 <script setup>
-import WelcomeItem from './WelcomeItem.vue'
-import DocumentationIcon from './icons/IconDocumentation.vue'
-import ToolingIcon from './icons/IconTooling.vue'
-import EcosystemIcon from './icons/IconEcosystem.vue'
-import CommunityIcon from './icons/IconCommunity.vue'
-import SupportIcon from './icons/IconSupport.vue'
+
+import { ref } from 'vue';
+import {run} from '@/utils/api'
+
+const API_TOKEN = '8O-At8V_Yp0qHQ3O4ZGBt8nLj0t4ySLvRgZ7I75o';
+
+// Reactive variable to hold the response
+const response = ref(null);
+
+// Function to handle user input and generate AI response
+async function generateResponse(prompt) {
+  const model = "@hf/thebloke/llamaguard-7b-awq";
+  const input = {
+    messages: [
+      {
+        role: "system",
+        content: prompt,
+      }
+    ]
+  };
+  try {
+    const responseData = await run(model, input, API_TOKEN);
+    response.value = responseData; // Update the response variable
+    console.log(response); // Handle the response as needed
+  } catch (error) {
+    console.error("Error generating response:", error);
+    // Optionally, display error message to users
+    response.value = { error: 'An error occurred while generating the response.' };
+  }
+}
+
+// Example user prompt
+const userPrompt = ref("");
+
+// Method to handle user input submission
+const handleUserInput = async () => {
+  if (userPrompt.value.trim() !== "") {
+    await generateResponse(userPrompt.value.trim());
+    // Optionally, clear the input field after submission
+    userPrompt.value = "";
+  }
+};
 </script>
 
-<template>
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Documentation</template>
 
-    Vue’s
-    <a href="https://vuejs.org/" target="_blank" rel="noopener">official documentation</a>
-    provides you with all information you need to get started.
-  </WelcomeItem>
+  <template>
+    <div>
+      <input type="text" v-model="userPrompt" @keyup.enter="handleUserInput" placeholder="Enter your prompt">
+      <button @click="handleUserInput">Submit</button>
+  
+      <!-- Display the response -->
+      <div v-if="response">
+        <p>Response:</p>
+        <pre>{{ response }}</pre>
+      </div>
+    </div>
+  </template>
 
-  <WelcomeItem>
-    <template #icon>
-      <ToolingIcon />
-    </template>
-    <template #heading>Tooling</template>
 
-    This project is served and bundled with
-    <a href="https://vitejs.dev/guide/features.html" target="_blank" rel="noopener">Vite</a>. The
-    recommended IDE setup is
-    <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VSCode</a> +
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank" rel="noopener">Volar</a>. If
-    you need to test your components and web pages, check out
-    <a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a> and
-    <a href="https://on.cypress.io/component" target="_blank" rel="noopener"
-      >Cypress Component Testing</a
-    >.
-
-    <br />
-
-    More instructions are available in <code>README.md</code>.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <EcosystemIcon />
-    </template>
-    <template #heading>Ecosystem</template>
-
-    Get official tools and libraries for your project:
-    <a href="https://pinia.vuejs.org/" target="_blank" rel="noopener">Pinia</a>,
-    <a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue Router</a>,
-    <a href="https://test-utils.vuejs.org/" target="_blank" rel="noopener">Vue Test Utils</a>, and
-    <a href="https://github.com/vuejs/devtools" target="_blank" rel="noopener">Vue Dev Tools</a>. If
-    you need more resources, we suggest paying
-    <a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">Awesome Vue</a>
-    a visit.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <CommunityIcon />
-    </template>
-    <template #heading>Community</template>
-
-    Got stuck? Ask your question on
-    <a href="https://chat.vuejs.org" target="_blank" rel="noopener">Vue Land</a>, our official
-    Discord server, or
-    <a href="https://stackoverflow.com/questions/tagged/vue.js" target="_blank" rel="noopener"
-      >StackOverflow</a
-    >. You should also subscribe to
-    <a href="https://news.vuejs.org" target="_blank" rel="noopener">our mailing list</a> and follow
-    the official
-    <a href="https://twitter.com/vuejs" target="_blank" rel="noopener">@vuejs</a>
-    twitter account for latest news in the Vue world.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <SupportIcon />
-    </template>
-    <template #heading>Support Vue</template>
-
-    As an independent project, Vue relies on community backing for its sustainability. You can help
-    us by
-    <a href="https://vuejs.org/sponsor/" target="_blank" rel="noopener">becoming a sponsor</a>.
-  </WelcomeItem>
-</template>
