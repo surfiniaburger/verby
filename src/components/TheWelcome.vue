@@ -3,7 +3,7 @@
 import { ref } from 'vue';
 import {run} from '@/utils/api'
 
-const API_TOKEN = '8O-At8V_Yp0qHQ3O4ZGBt8nLj0t4ySLvRgZ7I75o';
+const API_TOKEN = '';
 
 // Reactive variable to hold the response
 const response = ref(null);
